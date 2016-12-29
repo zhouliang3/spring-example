@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+    <!--<mvc:annotation-driven/>-->
+    <mvc:annotation-driven conversion-service="conversionService">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/json;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+                <property name="objectMapper" ref="objectMapper"/>
+            </bean>
+
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!--json对象中的日期转换-->
+    <bean id="objectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean"
+          p:indentOutput="true"
+          p:simpleDateFormat="yyyy-MM-dd"/>
+
+    <!--将请求string转换为日期的转换器-->
+    <bean id="conversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="cn.javass.chapter7.web.controller.support.converter.StringToDateConverter">
+                    <constructor-arg value="yyyy-MM-dd"/>
+                </bean>
+            </set>
+        </property>
+        <!--加入@phoneNumber自定义的注解格式化器-->
+        <property name="formatters">
+            <set>
+                <bean class="cn.javass.chapter7.web.controller.support.formatter.PhoneNumberFormatAnnotationFormatterFactory"/>
+            </set>
+        </property>
+    </bean>
+
+</beans>
